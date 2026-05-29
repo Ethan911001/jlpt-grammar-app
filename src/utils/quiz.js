@@ -149,6 +149,35 @@ export function generateReorder(grammarItem) {
   }
 }
 
+// Spaced-repetition quiz: tests due items first, then never-seen items, then
+// fills any remainder with random picks. Each item maps to one direct question
+// (fill / choice / reorder) — matching is skipped so the review stays focused
+// on the specific scheduled item.
+export function generateSrsQuiz(dueItems, freshItems, pool, allGrammar, count = 10) {
+  const ordered = [...dueItems, ...freshItems]
+  // Fill remainder with random items not already included
+  if (ordered.length < count) {
+    const usedIds = new Set(ordered.map(g => g.id))
+    const filler = shuffle(pool.filter(g => !usedIds.has(g.id)))
+    ordered.push(...filler.slice(0, count - ordered.length))
+  }
+  const selected = ordered.slice(0, count)
+
+  const questions = []
+  for (const item of selected) {
+    const rand = Math.random()
+    if (rand < 0.4) {
+      questions.push(generateFillBlank(item))
+    } else if (rand < 0.7) {
+      questions.push(generateMultipleChoice(item, allGrammar))
+    } else {
+      const reorder = generateReorder(item)
+      questions.push(reorder || generateFillBlank(item))
+    }
+  }
+  return questions
+}
+
 function pickQuestionType(item, allGrammar, pool) {
   const rand = Math.random()
   if (rand < 0.3) {

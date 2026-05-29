@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import LevelSelector from './components/LevelSelector'
 import QuizSession from './components/QuizSession'
 import ResultView from './components/ResultView'
@@ -23,19 +23,27 @@ export default function App() {
   const [sessionResults, setSessionResults] = useState(null)
   const [quizKey, setQuizKey] = useState(0)
   const [quizCount, setQuizCount] = useState(10)
-  const [weakMode, setWeakMode] = useState(false)
+  const [mode, setMode] = useState('normal')
   const {
     progress, record, getWeakPoints, clearProgress,
     bookmarks, toggleBookmark, isBookmarked,
     sessionHistory, recordSession, getLevelStats,
+    getDueItems, getSrsStats,
   } = useProgress()
 
   const recordRef = useRef(record)
   recordRef.current = record
   const stableRecord = useCallback((...args) => recordRef.current(...args), [])
 
-  function startQuiz(weak = false) {
-    setWeakMode(weak)
+  const pool = useMemo(
+    () => selectedLevels.flatMap(l => grammarByLevel[l] || []),
+    [selectedLevels]
+  )
+  const srsStats = getSrsStats(pool)
+  const { due: srsDue, fresh: srsFresh } = getDueItems(pool)
+
+  function startQuiz(m = 'normal') {
+    setMode(m)
     setSessionResults(null)
     setQuizKey(k => k + 1)
     setPage('quiz')
@@ -84,15 +92,28 @@ export default function App() {
             </div>
 
             <div className="start-buttons">
-              <button className="start-btn" onClick={() => startQuiz(false)}>
+              <button className="start-btn" onClick={() => startQuiz('normal')}>
                 開始練習（{quizCount} 題）
               </button>
+              {(srsStats.due > 0 || srsStats.fresh > 0) && (
+                <button className="start-btn srs-btn" onClick={() => startQuiz('srs')}>
+                  間隔複習（{srsStats.due > 0 ? `${srsStats.due} 條待複習` : `${quizCount} 新題`}）
+                </button>
+              )}
               {weakPoints.length > 0 && (
-                <button className="start-btn weak-btn" onClick={() => startQuiz(true)}>
+                <button className="start-btn weak-btn" onClick={() => startQuiz('weak')}>
                   弱點加強（{quizCount} 題）
                 </button>
               )}
             </div>
+
+            {(srsStats.due > 0 || srsStats.scheduled > 0) && (
+              <div className="srs-stats">
+                <span className="srs-stat due">待複習 {srsStats.due}</span>
+                <span className="srs-stat fresh">未學 {srsStats.fresh}</span>
+                <span className="srs-stat scheduled">已排程 {srsStats.scheduled}</span>
+              </div>
+            )}
 
             {/* Level accuracy chart */}
             {levelStats.some(s => s.attempts > 0) && (
@@ -192,7 +213,9 @@ export default function App() {
             selectedLevels={selectedLevels}
             progress={progress}
             quizCount={quizCount}
-            weakMode={weakMode}
+            mode={mode}
+            srsDue={srsDue}
+            srsFresh={srsFresh}
             onRecord={stableRecord}
             onFinish={handleFinish}
           />
@@ -202,7 +225,7 @@ export default function App() {
           <ResultView
             results={sessionResults}
             progress={progress}
-            onRestart={() => startQuiz(weakMode)}
+            onRestart={() => startQuiz(mode)}
             onHome={() => setPage('home')}
           />
         )}
