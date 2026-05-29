@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { grammarByLevel, levels, allGrammar } from '../data'
 
 function speak(text) {
@@ -14,6 +14,14 @@ export default function GrammarBrowser({ selectedLevels, progress, bookmarks, to
   const [search, setSearch] = useState('')
   const [browseLevels, setBrowseLevels] = useState(selectedLevels)
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false)
+  const [showTop, setShowTop] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   function toggleLevel(level) {
     if (browseLevels.includes(level)) {
@@ -146,6 +154,17 @@ export default function GrammarBrowser({ selectedLevels, progress, bookmarks, to
           )
         })}
       </div>
+
+      {showTop && (
+        <button
+          className="back-to-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="回到最上緣"
+          aria-label="回到最上緣"
+        >
+          ↑
+        </button>
+      )}
     </div>
   )
 }

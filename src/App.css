@@ -1134,3 +1134,36 @@ body {
   color: var(--text-dim);
   font-size: 16px;
 }
+
+/* === Back to Top === */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: max(24px, calc(50% - 350px + 24px));
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s, transform 0.2s;
+  animation: fadeInUp 0.2s ease;
+}
+
+.back-to-top:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
