@@ -149,22 +149,11 @@ export function generateReorder(grammarItem) {
   }
 }
 
-// Spaced-repetition quiz: tests due items first, then never-seen items, then
-// fills any remainder with random picks. Each item maps to one direct question
-// (fill / choice / reorder) — matching is skipped so the review stays focused
-// on the specific scheduled item.
-export function generateSrsQuiz(dueItems, freshItems, pool, allGrammar, count = 10) {
-  const ordered = [...dueItems, ...freshItems]
-  // Fill remainder with random items not already included
-  if (ordered.length < count) {
-    const usedIds = new Set(ordered.map(g => g.id))
-    const filler = shuffle(pool.filter(g => !usedIds.has(g.id)))
-    ordered.push(...filler.slice(0, count - ordered.length))
-  }
-  const selected = ordered.slice(0, count)
-
+// Map a list of grammar items to one direct question each (fill / choice /
+// reorder). Matching is skipped so the review stays focused on each item.
+function buildQuestions(items, allGrammar) {
   const questions = []
-  for (const item of selected) {
+  for (const item of items) {
     const rand = Math.random()
     if (rand < 0.4) {
       questions.push(generateFillBlank(item))
@@ -176,6 +165,25 @@ export function generateSrsQuiz(dueItems, freshItems, pool, allGrammar, count = 
     }
   }
   return questions
+}
+
+// Spaced-repetition quiz: tests due items first, then never-seen items, then
+// fills any remainder with random picks.
+export function generateSrsQuiz(dueItems, freshItems, pool, allGrammar, count = 10) {
+  const ordered = [...dueItems, ...freshItems]
+  // Fill remainder with random items not already included
+  if (ordered.length < count) {
+    const usedIds = new Set(ordered.map(g => g.id))
+    const filler = shuffle(pool.filter(g => !usedIds.has(g.id)))
+    ordered.push(...filler.slice(0, count - ordered.length))
+  }
+  return buildQuestions(ordered.slice(0, count), allGrammar)
+}
+
+// Mistake-notebook quiz: drills only the items the user recently got wrong.
+// No random filler — a short quiz is fine if there are few mistakes.
+export function generateMistakeQuiz(mistakeItems, allGrammar, count = 10) {
+  return buildQuestions(shuffle(mistakeItems).slice(0, count), allGrammar)
 }
 
 function pickQuestionType(item, allGrammar, pool) {

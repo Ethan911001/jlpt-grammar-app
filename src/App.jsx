@@ -29,11 +29,14 @@ export default function App() {
     bookmarks, toggleBookmark, isBookmarked,
     sessionHistory, recordSession, getLevelStats,
     getDueItems, getSrsStats,
+    dailyGoal, setDailyGoal, getTodayCount, getStreak,
+    getMistakes, exportData, importData,
   } = useProgress()
 
   const recordRef = useRef(record)
   recordRef.current = record
   const stableRecord = useCallback((...args) => recordRef.current(...args), [])
+  const fileInputRef = useRef(null)
 
   const pool = useMemo(
     () => selectedLevels.flatMap(l => grammarByLevel[l] || []),
@@ -41,6 +44,44 @@ export default function App() {
   )
   const srsStats = getSrsStats(pool)
   const { due: srsDue, fresh: srsFresh } = getDueItems(pool)
+
+  const mistakes = getMistakes()
+  const mistakeItems = useMemo(
+    () => mistakes.map(m => allGrammar.find(g => g.id === m.id)).filter(Boolean),
+    [mistakes]
+  )
+  const streak = getStreak()
+  const todayCount = getTodayCount()
+
+  function handleExport() {
+    const data = exportData()
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    const d = new Date()
+    a.href = url
+    a.download = `jlpt-grammar-backup-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function handleImportFile(e) {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-importing the same file
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result)
+        if (!confirm('匯入將覆蓋目前所有紀錄，確定要繼續嗎？')) return
+        const ok = importData(data)
+        alert(ok ? '匯入成功！' : '檔案格式不符，無法匯入。')
+      } catch {
+        alert('無法讀取檔案，請確認是正確的備份 JSON。')
+      }
+    }
+    reader.readAsText(file)
+  }
 
   function startQuiz(m = 'normal') {
     setMode(m)
@@ -71,6 +112,39 @@ export default function App() {
       <main className="app-main">
         {page === 'home' && (
           <div className="home">
+            <div className="daily-banner">
+              <div className="streak-box" title="連續練習天數">
+                <span className="streak-flame">🔥</span>
+                <span className="streak-num">{streak}</span>
+                <span className="streak-label">天連續</span>
+              </div>
+              <div className="goal-box">
+                <div className="goal-top">
+                  <span className="goal-text">
+                    今日 {todayCount}/{dailyGoal} 題
+                    {todayCount >= dailyGoal && <span className="goal-done"> ✅ 達成</span>}
+                  </span>
+                  <div className="goal-options">
+                    {[10, 20, 30, 50].map(n => (
+                      <button
+                        key={n}
+                        className={`goal-opt ${dailyGoal === n ? 'active' : ''}`}
+                        onClick={() => setDailyGoal(n)}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="goal-bar-bg">
+                  <div
+                    className="goal-bar-fill"
+                    style={{ width: `${Math.min(100, Math.round((todayCount / dailyGoal) * 100))}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="home-section">
               <h2>選擇練習級別</h2>
               <LevelSelector selected={selectedLevels} onChange={setSelectedLevels} />
@@ -144,6 +218,29 @@ export default function App() {
               </div>
             )}
 
+            {mistakeItems.length > 0 && (
+              <div className="home-section mistake-section">
+                <div className="section-head">
+                  <h3>錯題本（{mistakeItems.length}）</h3>
+                  <button className="mini-btn mistake-mini-btn" onClick={() => startQuiz('mistakes')}>
+                    錯題複習
+                  </button>
+                </div>
+                <div className="weak-list">
+                  {mistakes.slice(0, 5).map(m => {
+                    const g = allGrammar.find(item => item.id === m.id)
+                    return (
+                      <div key={m.id} className="weak-item">
+                        <span className={`level-badge small ${g?.level || ''}`}>{g?.level}</span>
+                        <span className="weak-grammar">{g?.grammar || m.id}</span>
+                        <span className="weak-stats">最近錯 {m.recentWrong} 次</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             {weakPoints.length > 0 && (
               <div className="home-section weak-section">
                 <h3>需要加強的文法</h3>
@@ -196,6 +293,17 @@ export default function App() {
               {sessionHistory.length > 0 && (
                 <p>共完成 {sessionHistory.length} 次測驗</p>
               )}
+              <div className="backup-buttons">
+                <button className="backup-btn" onClick={handleExport}>匯出備份</button>
+                <button className="backup-btn" onClick={() => fileInputRef.current?.click()}>匯入備份</button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/json,.json"
+                  style={{ display: 'none' }}
+                  onChange={handleImportFile}
+                />
+              </div>
               {Object.keys(progress).length > 0 && (
                 <button className="clear-btn" onClick={() => {
                   if (confirm('確定要清除所有練習紀錄嗎？（含歷史紀錄）')) clearProgress()
@@ -216,6 +324,7 @@ export default function App() {
             mode={mode}
             srsDue={srsDue}
             srsFresh={srsFresh}
+            mistakeItems={mistakeItems}
             onRecord={stableRecord}
             onFinish={handleFinish}
           />

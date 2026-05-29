@@ -4,6 +4,7 @@ const STORAGE_KEY = 'jlpt-grammar-progress'
 const BOOKMARK_KEY = 'jlpt-grammar-bookmarks'
 const HISTORY_KEY = 'jlpt-grammar-sessions'
 const SRS_KEY = 'jlpt-grammar-srs'
+const GOAL_KEY = 'jlpt-grammar-daily-goal'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -18,6 +19,12 @@ function load(key, fallback) {
 
 function save(key, data) {
   localStorage.setItem(key, JSON.stringify(data))
+}
+
+// Local-date key (YYYY-M-D) for day-level grouping, ignoring time of day.
+function dayKey(d) {
+  const dt = new Date(d)
+  return `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}`
 }
 
 // SM-2 (simplified, binary correct/wrong) spaced-repetition scheduler.
@@ -52,6 +59,7 @@ export function useProgress() {
   const [bookmarks, setBookmarks] = useState(() => load(BOOKMARK_KEY, []))
   const [sessionHistory, setSessionHistory] = useState(() => load(HISTORY_KEY, []))
   const [srs, setSrs] = useState(() => load(SRS_KEY, {}))
+  const [dailyGoal, setDailyGoalState] = useState(() => load(GOAL_KEY, 20))
 
   const record = useCallback((grammarId, correct, mode) => {
     setProgress(prev => {
@@ -150,6 +158,88 @@ export function useProgress() {
     return { due, fresh, scheduled, total: pool.length }
   }, [srs])
 
+  // === Daily goal & streak ===
+  const setDailyGoal = useCallback((n) => {
+    save(GOAL_KEY, n)
+    setDailyGoalState(n)
+  }, [])
+
+  // Number of questions answered today (summed across today's sessions).
+  const getTodayCount = useCallback(() => {
+    const today = dayKey(Date.now())
+    return sessionHistory
+      .filter(s => dayKey(s.date) === today)
+      .reduce((sum, s) => sum + s.total, 0)
+  }, [sessionHistory])
+
+  // Consecutive days (ending today, or yesterday if today not yet practiced)
+  // with at least one completed session.
+  const getStreak = useCallback(() => {
+    const days = new Set(sessionHistory.map(s => dayKey(s.date)))
+    if (days.size === 0) return 0
+    const d = new Date()
+    if (!days.has(dayKey(d))) {
+      // Today not done yet — streak is still alive only if yesterday was done.
+      d.setDate(d.getDate() - 1)
+      if (!days.has(dayKey(d))) return 0
+    }
+    let streak = 0
+    while (days.has(dayKey(d))) {
+      streak++
+      d.setDate(d.getDate() - 1)
+    }
+    return streak
+  }, [sessionHistory])
+
+  // === Mistake notebook ===
+  // Grammar items whose most recent answer was wrong (drops out once re-answered
+  // correctly). Sorted most-recently-missed first.
+  const getMistakes = useCallback(() => {
+    return Object.entries(progress)
+      .filter(([, s]) => s.history.length > 0 && !s.history[s.history.length - 1].correct)
+      .map(([id, s]) => ({
+        id,
+        correct: s.correct,
+        wrong: s.wrong,
+        recentWrong: s.history.slice(-5).filter(h => !h.correct).length,
+        lastDate: s.history[s.history.length - 1].date,
+      }))
+      .sort((a, b) => new Date(b.lastDate) - new Date(a.lastDate))
+  }, [progress])
+
+  // === Backup / restore ===
+  const exportData = useCallback(() => ({
+    app: 'jlpt-grammar',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    progress,
+    srs,
+    bookmarks,
+    sessions: sessionHistory,
+    dailyGoal,
+  }), [progress, srs, bookmarks, sessionHistory, dailyGoal])
+
+  const importData = useCallback((data) => {
+    if (!data || typeof data !== 'object') return false
+    if (data.app && data.app !== 'jlpt-grammar') return false
+    if (data.progress && typeof data.progress === 'object') {
+      save(STORAGE_KEY, data.progress); setProgress(data.progress)
+    }
+    if (data.srs && typeof data.srs === 'object') {
+      save(SRS_KEY, data.srs); setSrs(data.srs)
+    }
+    if (Array.isArray(data.bookmarks)) {
+      save(BOOKMARK_KEY, data.bookmarks); setBookmarks(data.bookmarks)
+    }
+    if (Array.isArray(data.sessions)) {
+      save(HISTORY_KEY, data.sessions); setSessionHistory(data.sessions)
+    }
+    if (typeof data.dailyGoal === 'number') {
+      save(GOAL_KEY, data.dailyGoal); setDailyGoalState(data.dailyGoal)
+    }
+    return true
+  }, [])
+
   const clearProgress = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
     localStorage.removeItem(HISTORY_KEY)
@@ -178,5 +268,7 @@ export function useProgress() {
     bookmarks, toggleBookmark, isBookmarked,
     sessionHistory, recordSession, getLevelStats,
     srs, getDueItems, getSrsStats,
+    dailyGoal, setDailyGoal, getTodayCount, getStreak,
+    getMistakes, exportData, importData,
   }
 }

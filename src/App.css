@@ -1167,3 +1167,149 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* === Daily Banner (streak + goal) === */
+.daily-banner {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.streak-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-right: 14px;
+  border-right: 1px solid var(--border);
+  min-width: 72px;
+}
+
+.streak-flame { font-size: 22px; }
+
+.streak-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: #f97316;
+  line-height: 1.1;
+}
+
+.streak-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.goal-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.goal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.goal-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.goal-done { color: var(--correct); font-weight: 700; }
+
+.goal-options { display: flex; gap: 4px; }
+
+.goal-opt {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.goal-opt.active {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.goal-bar-bg {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.goal-bar-fill {
+  height: 100%;
+  background: var(--correct);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* === Mistake Notebook === */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.section-head h3 { margin: 0; }
+
+.mini-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mini-btn:hover { opacity: 0.9; }
+
+.mistake-mini-btn { background: #ef4444; }
+
+.weak-mode-badge.mistake-badge {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* === Backup / Restore === */
+.backup-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.backup-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backup-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
