@@ -1,0 +1,1087 @@
+/* === Base === */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --surface-hover: #1a2847;
+  --border: #2a3a5c;
+  --text: #e0e0e0;
+  --text-dim: #8892b0;
+  --accent: #e94560;
+  --accent-soft: rgba(233, 69, 96, 0.15);
+  --correct: #00d26a;
+  --correct-bg: rgba(0, 210, 106, 0.12);
+  --wrong: #ff6b6b;
+  --wrong-bg: rgba(255, 107, 107, 0.12);
+  --radius: 12px;
+}
+
+body {
+  font-family: 'Segoe UI', 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* === Layout === */
+.app {
+  max-width: 700px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+
+.app-header h1 {
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.app-header nav {
+  display: flex;
+  gap: 8px;
+}
+
+.app-header nav button {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.app-header nav button.active,
+.app-header nav button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.app-main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* === Home === */
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.home-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.home-section h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.home-section h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* === Level Selector === */
+.level-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.level-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.level-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.level-btn.N5.active { --accent: #22c55e; border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.15); }
+.level-btn.N4.active { --accent: #38bdf8; border-color: #38bdf8; color: #38bdf8; background: rgba(56,189,248,0.15); }
+.level-btn.N3.active { --accent: #eab308; border-color: #eab308; color: #eab308; background: rgba(234,179,8,0.15); }
+.level-btn.N2.active { --accent: #f97316; border-color: #f97316; color: #f97316; background: rgba(249,115,22,0.15); }
+.level-btn.N1.active { --accent: #ef4444; border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.15); }
+
+.level-btn:hover {
+  border-color: var(--accent);
+}
+
+.level-btn.N5:hover { border-color: #22c55e; }
+.level-btn.N4:hover { border-color: #38bdf8; }
+.level-btn.N3:hover { border-color: #eab308; }
+.level-btn.N2:hover { border-color: #f97316; }
+.level-btn.N1:hover { border-color: #ef4444; }
+
+/* === Quiz Count Selector === */
+.quiz-count-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.count-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.count-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.count-btn:hover {
+  border-color: var(--accent);
+}
+
+/* === Start Buttons === */
+.start-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.start-btn {
+  flex: 1;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.start-btn:hover {
+  opacity: 0.9;
+}
+
+.start-btn.weak-btn {
+  background: #f97316;
+  font-size: 16px;
+}
+
+/* === Weak Mode Badge === */
+.weak-mode-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.15);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+/* === Weak Points === */
+.weak-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weak-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--wrong-bg);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.weak-stats {
+  color: var(--text-dim);
+}
+
+/* === Stats === */
+.clear-btn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  font-size: 13px;
+  border: 1px solid var(--wrong);
+  background: transparent;
+  color: var(--wrong);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* === Quiz === */
+.quiz-session {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s;
+  border-radius: 3px;
+}
+
+.quiz-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.quiz-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.level-badge {
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--accent);
+}
+
+.level-badge.small {
+  font-size: 11px;
+  padding: 2px 8px;
+}
+
+.level-badge.N5 { background: #22c55e; }
+.level-badge.N4 { background: #38bdf8; }
+.level-badge.N3 { background: #eab308; color: #1a1a2e; }
+.level-badge.N2 { background: #f97316; }
+.level-badge.N1 { background: #ef4444; }
+
+.grammar-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.quiz-hint {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.quiz-question {
+  font-size: 22px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+  letter-spacing: 1px;
+}
+
+.quiz-sentence {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.quiz-translation {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* === Fill Blank === */
+.fill-form {
+  display: flex;
+  gap: 10px;
+}
+
+.fill-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 18px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.fill-input:focus {
+  border-color: var(--accent);
+}
+
+.submit-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* === Multiple Choice === */
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.choice-btn {
+  padding: 14px 18px;
+  font-size: 16px;
+  text-align: left;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.choice-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.choice-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+}
+
+.choice-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-bg);
+}
+
+/* === Result === */
+.result {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.result.correct {
+  background: var(--correct-bg);
+}
+
+.result.wrong {
+  background: var(--wrong-bg);
+}
+
+.result-icon {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.correct-answer {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.explanation-box {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+.explanation-box strong {
+  color: var(--text);
+}
+
+.next-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.next-btn:hover {
+  background: var(--accent-soft);
+}
+
+/* === Result View === */
+.result-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.result-view h2 {
+  text-align: center;
+  font-size: 22px;
+}
+
+.score-circle {
+  text-align: center;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.score-detail {
+  color: var(--text-dim);
+  font-size: 16px;
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.result-item.correct {
+  background: var(--correct-bg);
+}
+
+.result-item.wrong {
+  background: var(--wrong-bg);
+}
+
+.result-marker {
+  font-size: 16px;
+}
+
+.result-grammar {
+  flex: 1;
+}
+
+.result-level {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* === Export === */
+.export-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.export-section h3 {
+  margin-bottom: 6px;
+}
+
+.export-hint {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.export-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.export-btn {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.export-btn.secondary {
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.export-btn.secondary:hover {
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+/* === Action Buttons === */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.primary-btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* === Grammar Browser === */
+.grammar-browser {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.browse-level-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.browse-level-selector .level-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.level-count {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+}
+
+.grammar-count {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.grammar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grammar-item {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.grammar-item:hover {
+  background: var(--surface-hover);
+}
+
+.grammar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.grammar-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.grammar-meaning {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.accuracy {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.accuracy.good {
+  color: var(--correct);
+  background: var(--correct-bg);
+}
+
+.accuracy.bad {
+  color: var(--wrong);
+  background: var(--wrong-bg);
+}
+
+.grammar-detail {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.grammar-detail p {
+  margin-bottom: 6px;
+}
+
+.examples {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.example {
+  padding: 10px 14px;
+  background: var(--bg);
+  border-radius: 8px;
+}
+
+.example-jp {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.example-reading {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.example-zh {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+/* === Level Chart === */
+.level-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-label {
+  width: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.chart-bar-bg {
+  flex: 1;
+  height: 20px;
+  background: var(--bg);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.chart-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+.chart-value {
+  width: 40px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.chart-detail {
+  width: 50px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* === Session History === */
+.session-history {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.history-date {
+  color: var(--text-dim);
+  font-size: 13px;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.history-levels {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.history-score {
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.history-score.good {
+  color: var(--correct);
+}
+
+.history-score.bad {
+  color: var(--wrong);
+}
+
+/* === Speak Button === */
+.speak-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.speak-btn:hover {
+  background: var(--accent-soft);
+}
+
+.example-jp-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* === Similar Grammar === */
+.similar-grammar {
+  margin: 10px 0;
+  padding: 10px 14px;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.similar-item {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.similar-item:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.similar-meaning {
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+/* === Bookmark === */
+.bookmark-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-dim);
+  padding: 0 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.bookmark-btn:hover {
+  color: #eab308;
+  transform: scale(1.2);
+}
+
+.bookmark-btn.active {
+  color: #eab308;
+}
+
+.bookmark-filter {
+  color: #eab308 !important;
+}
+
+.bookmark-filter.active {
+  border-color: #eab308 !important;
+  background: rgba(234, 179, 8, 0.15) !important;
+  color: #eab308 !important;
+}
+
+.bookmark-filter:hover {
+  border-color: #eab308 !important;
+}
+
+/* === Matching === */
+.matching-grid {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.matching-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match-item {
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 15px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.match-item.left {
+  font-weight: 700;
+}
+
+.match-item.right {
+  font-size: 14px;
+}
+
+.match-item:hover:not(.matched) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.match-item.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.match-item.matched {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+  cursor: default;
+  opacity: 0.7;
+}
+
+.match-item.wrong-flash {
+  border-color: var(--wrong);
+  background: var(--wrong-bg);
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* === Reorder === */
+.reorder-answer {
+  min-height: 52px;
+  padding: 10px;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.reorder-placeholder {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.reorder-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.reorder-chip {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.reorder-chip:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.reorder-chip.placed {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.reorder-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.reorder-actions .submit-btn {
+  flex: 1;
+}
+
+.reset-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text-dim);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+/* === Empty State === */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+  font-size: 16px;
+}
