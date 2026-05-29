@@ -4,7 +4,7 @@ import QuizSession from './components/QuizSession'
 import ResultView from './components/ResultView'
 import GrammarBrowser from './components/GrammarBrowser'
 import { useProgress } from './hooks/useProgress'
-import { levels, grammarByLevel } from './data'
+import { levels, grammarByLevel, allGrammar } from './data'
 import './App.css'
 
 const QUIZ_COUNTS = [5, 10, 20]
@@ -127,14 +127,18 @@ export default function App() {
               <div className="home-section weak-section">
                 <h3>需要加強的文法</h3>
                 <div className="weak-list">
-                  {weakPoints.slice(0, 5).map(w => (
-                    <div key={w.id} className="weak-item">
-                      <span>{w.id}</span>
-                      <span className="weak-stats">
-                        ❌ {w.wrong} / ⭕ {w.correct}
-                      </span>
-                    </div>
-                  ))}
+                  {weakPoints.slice(0, 5).map(w => {
+                    const g = allGrammar.find(item => item.id === w.id)
+                    return (
+                      <div key={w.id} className="weak-item">
+                        <span className={`level-badge small ${g?.level || ''}`}>{g?.level}</span>
+                        <span className="weak-grammar">{g?.grammar || w.id}</span>
+                        <span className="weak-stats">
+                          ❌ {w.wrong} / ⭕ {w.correct}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}

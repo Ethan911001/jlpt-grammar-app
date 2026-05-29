@@ -68,48 +68,70 @@ export function generateMatching(grammarItems) {
 }
 
 function splitSentence(sentence) {
-  // Split Japanese sentence into meaningful chunks for reordering
-  // Try splitting by particles and common breakpoints
-  const parts = []
-  let remaining = sentence
+  // Remove trailing punctuation (。．.！？!?)
+  const clean = sentence.replace(/[。．.！？!?]+$/, '')
 
-  // Remove trailing period/。
-  remaining = remaining.replace(/[。．.]$/, '')
+  // Split after multi-char particles/markers first, then single-char particles
+  // Order matters: longer patterns first to avoid partial matches
+  const splitPoints = /(?<=(?:ながら|から|まで|けど|けれど|ので|のに|たら|ても|って|という|ところ|について|として|にとって|に対して|によって|において|、))/g
+  let parts = clean.split(splitPoints).filter(p => p.length > 0)
 
-  // Split by common particles and markers, keeping them attached
-  const regex = /([^はがをにでへともからまでよりなのか、]+[はがをにでへともからまでよりなのか、]?)/g
-  let match
-  while ((match = regex.exec(remaining)) !== null) {
-    if (match[1].trim()) parts.push(match[1])
-  }
-
-  // If splitting didn't work well, fall back to roughly equal chunks
+  // If not enough parts, try splitting on single-char particles (は、が、を、に、で、へ、と、も)
+  // but only after content (not inside words like ます、です)
   if (parts.length < 3) {
-    const len = remaining.length
-    const chunkSize = Math.ceil(len / 4)
-    const fallback = []
-    for (let i = 0; i < len; i += chunkSize) {
-      fallback.push(remaining.slice(i, i + chunkSize))
-    }
-    return fallback
+    const singleSplit = /(?<=.(?:は|が|を|に|で|へ|と|も)(?=[^぀-ゟー]))/g
+    parts = clean.split(singleSplit).filter(p => p.length > 0)
   }
 
-  // Merge tiny fragments
+  // If still not enough, split by punctuation (、)
+  if (parts.length < 3) {
+    parts = clean.split(/(?<=、)/).filter(p => p.length > 0)
+  }
+
+  // Last resort: split into roughly equal chunks
+  if (parts.length < 3) {
+    const len = clean.length
+    const chunkSize = Math.max(3, Math.ceil(len / 4))
+    parts = []
+    for (let i = 0; i < len; i += chunkSize) {
+      parts.push(clean.slice(i, i + chunkSize))
+    }
+  }
+
+  // Merge any fragments shorter than 2 chars into neighbors
   const merged = []
   for (const p of parts) {
-    if (merged.length > 0 && merged[merged.length - 1].length < 3) {
+    if (merged.length > 0 && merged[merged.length - 1].length < 2) {
       merged[merged.length - 1] += p
     } else {
       merged.push(p)
     }
   }
+  // Check last fragment
+  if (merged.length > 1 && merged[merged.length - 1].length < 2) {
+    const last = merged.pop()
+    merged[merged.length - 1] += last
+  }
 
-  return merged.length >= 3 ? merged : parts
+  // Verify: rejoined must equal original
+  if (merged.join('') !== clean) {
+    // Fallback to safe equal chunks
+    const len = clean.length
+    const chunkSize = Math.max(3, Math.ceil(len / 4))
+    const safe = []
+    for (let i = 0; i < len; i += chunkSize) {
+      safe.push(clean.slice(i, i + chunkSize))
+    }
+    return safe
+  }
+
+  // Return merged result — if < 3 parts, generateReorder will skip this sentence
+  return merged
 }
 
 export function generateReorder(grammarItem) {
   const ex = grammarItem.examples[Math.floor(Math.random() * grammarItem.examples.length)]
-  const sentence = ex.jp.replace(/[。．.]$/, '')
+  const sentence = ex.jp.replace(/[。．.！？!?]+$/, '')
   const parts = splitSentence(sentence)
 
   if (parts.length < 3) return null

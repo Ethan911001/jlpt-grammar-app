@@ -218,15 +218,22 @@ body {
 
 .weak-item {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   padding: 8px 12px;
   background: var(--wrong-bg);
   border-radius: 8px;
   font-size: 14px;
 }
 
+.weak-grammar {
+  flex: 1;
+  font-weight: 600;
+}
+
 .weak-stats {
   color: var(--text-dim);
+  flex-shrink: 0;
 }
 
 /* === Stats === */
