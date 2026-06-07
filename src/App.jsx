@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import LevelSelector from './components/LevelSelector'
 import QuizSession from './components/QuizSession'
 import ResultView from './components/ResultView'
@@ -34,7 +34,7 @@ export default function App() {
   } = useProgress()
 
   const recordRef = useRef(record)
-  recordRef.current = record
+  useEffect(() => { recordRef.current = record }, [record])
   const stableRecord = useCallback((...args) => recordRef.current(...args), [])
   const fileInputRef = useRef(null)
 

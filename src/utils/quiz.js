@@ -186,23 +186,6 @@ export function generateMistakeQuiz(mistakeItems, allGrammar, count = 10) {
   return buildQuestions(shuffle(mistakeItems).slice(0, count), allGrammar)
 }
 
-function pickQuestionType(item, allGrammar, pool) {
-  const rand = Math.random()
-  if (rand < 0.3) {
-    return generateFillBlank(item)
-  } else if (rand < 0.55) {
-    return generateMultipleChoice(item, allGrammar)
-  } else if (rand < 0.75) {
-    const reorder = generateReorder(item)
-    if (reorder) return reorder
-    return generateFillBlank(item) // fallback
-  } else {
-    const matching = generateMatching(pool)
-    if (matching) return matching
-    return generateMultipleChoice(item, allGrammar) // fallback
-  }
-}
-
 export function generateQuiz(grammarList, allGrammar, count = 10) {
   const selected = shuffle(grammarList).slice(0, count)
   const questions = []

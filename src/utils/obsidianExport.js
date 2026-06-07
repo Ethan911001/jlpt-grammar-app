@@ -1,3 +1,7 @@
+// Ideographic space (U+3000) used between fields for Japanese-style
+// typography. Held in a string literal so no-irregular-whitespace passes.
+const IDEO_SPACE = '　'
+
 export function exportToObsidian(grammarItems, progress) {
   const lines = [
     '# 日文文法複習筆記',
@@ -16,7 +20,7 @@ export function exportToObsidian(grammarItems, progress) {
 
     lines.push(`## ${item.grammar}`)
     lines.push('')
-    lines.push(`**級別**：${item.level}　**意思**：${item.meaning}`)
+    lines.push(`**級別**：${item.level}${IDEO_SPACE}**意思**：${item.meaning}`)
     lines.push('')
     lines.push(`**接續**：${item.structure}`)
     lines.push('')
@@ -43,7 +47,7 @@ export function exportToObsidian(grammarItems, progress) {
     lines.push('')
     lines.push(`${item.grammar}（${item.level}）`)
     lines.push('?')
-    lines.push(`${item.meaning}　${item.structure}`)
+    lines.push(`${item.meaning}${IDEO_SPACE}${item.structure}`)
     lines.push('')
     lines.push(`${item.examples[0].jp} → ${item.examples[0].zh}`)
     lines.push('')

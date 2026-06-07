@@ -83,12 +83,9 @@ export function validateAllGrammar() {
   }
 }
 
-let lastRun = 0
-
 export function scheduleValidation(intervalMs = 30 * 60 * 1000) {
   function run() {
     const result = validateAllGrammar()
-    lastRun = Date.now()
     if (!result.ok) {
       console.warn(
         `[Grammar Validator] ${result.issues.length} issue(s) found in ${result.total} items:`,
